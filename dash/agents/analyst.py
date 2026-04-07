@@ -8,10 +8,9 @@ and provides insights rather than raw results.
 """
 
 from agno.agent import Agent
-from agno.learn import LearnedKnowledgeConfig, LearningMachine, LearningMode
 
 from dash.instructions import build_analyst_instructions
-from dash.settings import MODEL, agent_db, dash_knowledge, dash_learnings
+from dash.settings import MODEL, agent_db, dash_knowledge, dash_learning
 from dash.tools.build import build_analyst_tools
 
 # ---------------------------------------------------------------------------
@@ -26,10 +25,7 @@ analyst = Agent(
     instructions=build_analyst_instructions(),
     knowledge=dash_knowledge,
     search_knowledge=True,
-    learning=LearningMachine(
-        knowledge=dash_learnings,
-        learned_knowledge=LearnedKnowledgeConfig(mode=LearningMode.AGENTIC),
-    ),
+    learning=dash_learning,
     add_learnings_to_context=True,
     tools=build_analyst_tools(dash_knowledge),
     add_datetime_to_context=True,

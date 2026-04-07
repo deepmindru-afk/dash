@@ -32,7 +32,11 @@ ORDER BY plan_mrr DESC;
 -- <description>Monthly MRR trend over time — uses started_at for new MRR and ended_at for lost MRR</description>
 -- <query>
 WITH months AS (
-    SELECT generate_series('2024-01-01'::date, '2025-12-01'::date, '1 month'::interval)::date AS month_start
+    SELECT generate_series(
+        (SELECT DATE_TRUNC('month', MIN(started_at))::date FROM subscriptions),
+        CURRENT_DATE,
+        '1 month'::interval
+    )::date AS month_start
 ),
 active_at_month AS (
     SELECT
@@ -49,7 +53,7 @@ ORDER BY month_start;
 -- </query>
 
 -- <query churn_rate_by_plan>
--- <description>Monthly churn rate by plan — cancelled subscriptions / total subscriptions per month</description>
+-- <description>Lifetime churn rate by plan — cancelled subscriptions / total subscriptions</description>
 -- <query>
 SELECT
     plan,

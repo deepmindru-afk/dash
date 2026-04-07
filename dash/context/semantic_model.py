@@ -67,7 +67,3 @@ def format_semantic_model(model: dict[str, Any]) -> str:
         lines.append("")
 
     return "\n".join(lines)
-
-
-SEMANTIC_MODEL = build_semantic_model()
-SEMANTIC_MODEL_STR = format_semantic_model(SEMANTIC_MODEL)

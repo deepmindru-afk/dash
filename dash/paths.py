@@ -2,8 +2,8 @@
 
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).parent.parent
 DASH_DIR = Path(__file__).parent
+PROJECT_ROOT = DASH_DIR.parent
 KNOWLEDGE_DIR = PROJECT_ROOT / "knowledge"
 TABLES_DIR = KNOWLEDGE_DIR / "tables"
 BUSINESS_DIR = KNOWLEDGE_DIR / "business"

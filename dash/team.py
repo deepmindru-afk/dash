@@ -10,13 +10,12 @@ Test:
     python -m dash
 """
 
-from agno.learn import LearnedKnowledgeConfig, LearningMachine, LearningMode
 from agno.team import Team, TeamMode
 
 from dash.agents.analyst import analyst
 from dash.agents.engineer import engineer
 from dash.instructions import build_leader_instructions
-from dash.settings import MODEL, SLACK_TOKEN, agent_db, dash_knowledge, dash_learnings
+from dash.settings import MODEL, SLACK_TOKEN, agent_db, dash_learning, dash_learnings
 
 # ---------------------------------------------------------------------------
 # Team Leader Tools (Slack — leader-only)
@@ -49,25 +48,23 @@ dash = Team(
     db=agent_db,
     instructions=build_leader_instructions(),
     tools=leader_tools,
-    knowledge=dash_knowledge,
+    # Leader only needs learnings for context (error patterns, gotchas).
+    # Curated knowledge (SQL, table metadata) is for the specialists.
+    knowledge=dash_learnings,
     search_knowledge=True,
-    # Learning (shared knowledge base with members)
-    learning=LearningMachine(
-        knowledge=dash_learnings,
-        learned_knowledge=LearnedKnowledgeConfig(mode=LearningMode.AGENTIC),
-    ),
+    learning=dash_learning,
     add_learnings_to_context=True,
     # Member coordination
     share_member_interactions=True,
-    # Memory
+    # Per-User memory
     enable_agentic_memory=True,
-    # Session
+    # Session context
     search_past_sessions=True,
     num_past_sessions_to_search=5,
     read_chat_history=True,
     add_history_to_context=True,
     num_history_runs=5,
-    # Context
+    # Context (time, markdown, etc.)
     add_datetime_to_context=True,
     markdown=True,
 )

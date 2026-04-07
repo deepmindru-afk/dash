@@ -119,6 +119,8 @@ def run_reliability_cases(
             }
             if not passed and eval_result:
                 result["reason"] = f"expected {expected_tools}, failed: {eval_result.failed_tool_calls}"
+            if verbose:
+                result["response_preview"] = (run_result.content or "")[:200]
         except Exception as e:
             result = {
                 "question": question,
@@ -193,7 +195,7 @@ def run_accuracy_cases(
 
 
 def _print_status(result: dict, verbose: bool) -> None:
-    icon = {"PASS": "PASS", "FAIL": "FAIL", "ERROR": "ERR "}[result["status"]]
+    icon = {"PASS": "PASS", "FAIL": "FAIL", "ERROR": "ERR "}.get(result["status"], "??? ")
     score = f" (score: {result['score']})" if "score" in result else ""
     print(f"         {icon} ({result['duration']}s){score}")
     if verbose and result.get("reason"):
@@ -211,8 +213,11 @@ RUNNERS = {
 }
 
 
-def run_evals(category: str | None = None, verbose: bool = False) -> None:
-    """Run eval categories and display results."""
+def run_evals(category: str | None = None, verbose: bool = False) -> bool:
+    """Run eval categories and display results.
+
+    Returns True if all cases passed, False otherwise.
+    """
     all_results: list[dict] = []
     total_start = time.time()
 
@@ -229,7 +234,7 @@ def run_evals(category: str | None = None, verbose: bool = False) -> None:
 
     if not all_results:
         print(f"No cases found for category: {category}")
-        return
+        return False
 
     # Summary
     total_duration = round(time.time() - total_start, 2)
@@ -240,3 +245,5 @@ def run_evals(category: str | None = None, verbose: bool = False) -> None:
     print(f"\n{'=' * 50}")
     print(f"Results: {passed} passed, {failed} failed, {errors} errors ({total_duration}s)")
     print(f"{'=' * 50}\n")
+
+    return failed + errors == 0

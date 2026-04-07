@@ -242,8 +242,8 @@ knowledge/
   "table_description": "B2B SaaS customer accounts with company info and lifecycle status",
   "use_cases": ["Churn analysis", "Cohort segmentation", "Acquisition reporting"],
   "data_quality_notes": [
-    "created_at is UTC",
-    "status values: active, churned, suspended",
+    "signup_date is UTC",
+    "status values: active, churned, trial",
     "company_size is self-reported"
   ]
 }
@@ -252,12 +252,8 @@ knowledge/
 ### Query Patterns
 
 ```sql
--- <query name>monthly_mrr</query name>
--- <query description>
--- Monthly MRR calculation.
--- Sums active subscription MRR.
--- Excludes cancelled subscriptions.
--- </query description>
+-- <query monthly_mrr>
+-- <description>Monthly MRR from active subscriptions</description>
 -- <query>
 SELECT
     DATE_TRUNC('month', started_at) AS month,

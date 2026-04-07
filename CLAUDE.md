@@ -97,7 +97,7 @@ python -m evals --verbose            # Show response details
 | Agent | Role | Tools | Schema Access |
 |-------|------|-------|---------------|
 | **Dash (Leader)** | Routes requests, synthesizes insights | SlackTools (optional) | — |
-| **Analyst** | SQL queries, data analysis, insights | SQLTools (read-only), introspect_schema, save_validated_query, ReasoningTools | Reads public + dash |
+| **Analyst** | SQL queries, data analysis, insights | SQLTools (read-only, enforced by DB), introspect_schema, save_validated_query, ReasoningTools | Reads public + dash |
 | **Engineer** | Views, summary tables, computed data | SQLTools (dash schema), introspect_schema, update_knowledge, ReasoningTools | Reads public, writes dash |
 
 **Interfaces:**
@@ -137,7 +137,7 @@ Key gotchas:
 
 ## Evaluation System
 
-Four eval categories using Agno's eval framework:
+Five eval categories using Agno's eval framework:
 
 | Category | Eval Type | What It Tests |
 |----------|-----------|---------------|
@@ -145,6 +145,7 @@ Four eval categories using Agno's eval framework:
 | routing | ReliabilityEval | Team routes to correct agent/tools |
 | security | AgentAsJudgeEval (binary) | No credential or secret leaks |
 | governance | AgentAsJudgeEval (binary) | Refuses destructive SQL operations |
+| boundaries | AgentAsJudgeEval (binary) | Schema access boundaries respected |
 
 ## Environment Variables
 

@@ -67,6 +67,3 @@ def build_business_context(business_dir: Path | None = None) -> str:
             lines.append("")
 
     return "\n".join(lines)
-
-
-BUSINESS_CONTEXT = build_business_context()

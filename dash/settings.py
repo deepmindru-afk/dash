@@ -1,12 +1,13 @@
 """
 Shared settings for Dash agents.
 
-Centralizes the database, model, and knowledge bases
+Centralizes the database, model, knowledge bases, and learning config
 so all agents share the same resources.
 """
 
 from os import getenv
 
+from agno.learn import LearnedKnowledgeConfig, LearningMachine, LearningMode
 from agno.models.openai import OpenAIResponses
 
 from db import create_knowledge, get_postgres_db
@@ -16,7 +17,7 @@ agent_db = get_postgres_db()
 
 # Model — full object, not just ID.
 # Change class + ID together when switching providers.
-MODEL = OpenAIResponses(id=getenv("MODEL_ID", "gpt-5.4"))
+MODEL = OpenAIResponses(id="gpt-5.4")
 
 # Slack
 SLACK_TOKEN = getenv("SLACK_TOKEN", "")
@@ -27,3 +28,9 @@ SLACK_SIGNING_SECRET = getenv("SLACK_SIGNING_SECRET", "")
 dash_knowledge = create_knowledge("Dash Knowledge", "dash_knowledge")
 # LEARNINGS: Dynamic, discovered (error patterns, gotchas, user corrections)
 dash_learnings = create_knowledge("Dash Learnings", "dash_learnings")
+
+# Shared learning machine — single instance used by leader + all members.
+dash_learning = LearningMachine(
+    knowledge=dash_learnings,
+    learned_knowledge=LearnedKnowledgeConfig(mode=LearningMode.AGENTIC),
+)

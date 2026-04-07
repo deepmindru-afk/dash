@@ -17,17 +17,19 @@ from agno.tools.sql import SQLTools
 from dash.tools.introspect import create_introspect_schema_tool
 from dash.tools.save_query import create_save_validated_query_tool
 from dash.tools.update_knowledge import create_update_knowledge_tool
-from db import DASH_SCHEMA, db_url, get_sql_engine
+from db import DASH_SCHEMA, db_url, get_readonly_engine, get_sql_engine
 
 
 def build_analyst_tools(knowledge: Knowledge) -> list:
     """Assemble tools for the Analyst agent.
 
-    Read-only SQL against the default connection (public + dash schemas).
+    Read-only SQL enforced at the PostgreSQL level via
+    ``default_transaction_read_only``. Any DML/DDL is rejected by the database.
     """
+    ro_engine = get_readonly_engine()
     return [
-        SQLTools(db_url=db_url),
-        create_introspect_schema_tool(db_url),
+        SQLTools(db_engine=ro_engine),
+        create_introspect_schema_tool(db_url, engine=ro_engine),
         create_save_validated_query_tool(knowledge),
         ReasoningTools(),
     ]
@@ -39,9 +41,10 @@ def build_engineer_tools(knowledge: Knowledge) -> list:
     Full SQL scoped to the dash schema via search_path=dash,public.
     Can read company data in public, writes only to dash.
     """
+    eng = get_sql_engine()
     return [
-        SQLTools(db_engine=get_sql_engine(), schema=DASH_SCHEMA),
-        create_introspect_schema_tool(db_url),
+        SQLTools(db_engine=eng, schema=DASH_SCHEMA),
+        create_introspect_schema_tool(db_url, engine=eng),
         create_update_knowledge_tool(knowledge),
         ReasoningTools(),
     ]
